@@ -235,7 +235,8 @@
 </head>
 
 <body>
-    <audio id="backgroundMusic" preload="auto" loop>
+    <!-- autoplay: Chrome 자동재생 가능하려면 muted 필수, 그 후 사용자 상호작용으로 음소거 해제 -->
+    <audio id="backgroundMusic" preload="auto" autoplay loop muted>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
 
@@ -354,6 +355,7 @@
         let nextQuestionTimer = null;
         let isAnswerProcessing = false;
         let backgroundMusicPlaying = false;
+        let audioUnlocked = false; // 음소거 해제 여부
         let selectedVoice = null;
 
         const previousQuestions = {
@@ -378,21 +380,32 @@
             loadVoices();
         }
 
-        // 페이지 로드 시 음악 시작
+        // Chrome 자동재생: muted 상태로 자동 시작
         window.addEventListener('load', function() {
             const audio = document.getElementById('backgroundMusic');
-            audio.play().catch(err => console.log('자동재생 실패:', err));
+            audio.muted = true;
+            audio.volume = 0.5;
+            audio.play().catch(err => console.log('자동재생 시도:', err));
             backgroundMusicPlaying = true;
             updateMusicButton();
         });
 
-        // 사용자 상호작용 후 음악 재생 (자동재생 정책 우회)
+        // 사용자 첫 상호작용: 음소거 해제
         document.addEventListener('click', function() {
-            const audio = document.getElementById('backgroundMusic');
-            if (backgroundMusicPlaying && audio.paused) {
-                audio.play().catch(err => console.log('재생 실패:', err));
-            }
+            unlockAudio();
         }, { once: true });
+
+        document.addEventListener('touchstart', function() {
+            unlockAudio();
+        }, { once: true });
+
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            const audio = document.getElementById('backgroundMusic');
+            audio.muted = false;
+            audioUnlocked = true;
+            console.log('오디오 음소거 해제됨');
+        }
 
         function updateMusicButton() {
             const button = document.getElementById('musicToggle');
@@ -401,17 +414,16 @@
 
         function toggleBackgroundMusic() {
             const audio = document.getElementById('backgroundMusic');
-            const button = document.getElementById('musicToggle');
 
             if (backgroundMusicPlaying) {
                 audio.pause();
-                button.textContent = '🔇';
                 backgroundMusicPlaying = false;
             } else {
+                unlockAudio(); // 음소거 해제
                 audio.play().catch(err => console.log('재생 실패:', err));
-                button.textContent = '🔊';
                 backgroundMusicPlaying = true;
             }
+            updateMusicButton();
         }
 
         function stopBackgroundMusic() {
