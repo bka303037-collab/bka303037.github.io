@@ -209,15 +209,41 @@
             font-weight: bold;
             font-size: 20px;
         }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 50%;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            z-index: 1000;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            font-size: 20px;
+        }
+
+        .music-control:hover {
+            background: #f0f0f0;
+        }
     </style>
 </head>
 
 <body>
 
-    <audio id="backgroundMusic" preload="auto">
+    <audio id="backgroundMusic" preload="auto" autoplay loop>
         <source src="main_bgm.mp3" type="audio/mpeg">
     </audio>
 
+    <button class="music-control" id="musicToggle" onclick="toggleBackgroundMusic()" title="음악 재생/일시정지">
+        🔊
+    </button>
 
 <div class="container">
 
@@ -518,6 +544,8 @@
     let nextQuestionTimer = null;
     let isAnswerProcessing = false;
 
+    let backgroundMusicPlaying = true;
+
 
     /*
      * 직전 게임에서 사용했던 문제를 저장합니다.
@@ -528,6 +556,41 @@
         normal: [],
         hard: []
     };
+
+
+    /* =====================================================
+       배경음악 제어
+       ===================================================== */
+
+    function toggleBackgroundMusic() {
+
+        const audio = document.getElementById("backgroundMusic");
+        const button = document.getElementById("musicToggle");
+
+        if (backgroundMusicPlaying) {
+            audio.pause();
+            button.textContent = "🔇";
+            backgroundMusicPlaying = false;
+        } else {
+            audio.play();
+            button.textContent = "🔊";
+            backgroundMusicPlaying = true;
+        }
+    }
+
+    function stopBackgroundMusic() {
+        const audio = document.getElementById("backgroundMusic");
+        audio.pause();
+        backgroundMusicPlaying = false;
+        document.getElementById("musicToggle").textContent = "🔇";
+    }
+
+    function resumeBackgroundMusic() {
+        const audio = document.getElementById("backgroundMusic");
+        audio.play();
+        backgroundMusicPlaying = true;
+        document.getElementById("musicToggle").textContent = "🔊";
+    }
 
 
     /* =====================================================
@@ -1013,68 +1076,57 @@
         const perfectMessage =
             document.getElementById("perfectMessage");
 
-        const wrongArea =
-            document.getElementById("wrongAnswers");
+        if (score === 100) {
 
+            perfectMessage.innerHTML =
+                '<div class="perfect-message">🌟 완벽한 점수! 정말 잘했어요! 🌟</div>';
 
-        // 모두 정답
-        if (wrongAnswers.length === 0) {
+        } else {
 
-            perfectMessage.innerText =
-                "🌟 모든 문제를 맞혔어요! 정말 잘했어요!";
+            perfectMessage.innerText = "";
 
-            wrongArea.innerHTML = "";
-
-            return;
         }
 
 
-        perfectMessage.innerText =
-            "👏 잘했어요! 틀린 문제를 다시 확인해 보세요.";
+        const wrongAnswersDiv =
+            document.getElementById("wrongAnswers");
 
+        if (wrongAnswers.length > 0) {
 
-        let html =
-            "<h3>📝 다시 연습할 문제</h3>";
+            let html = "<h3>📝 틀린 문제</h3>";
 
+            wrongAnswers.forEach(item => {
 
-        wrongAnswers.forEach(function(item) {
+                html +=
+                    `<div class="wrong-item">` +
+                    `<strong>문제 ${item.number}:</strong> ${item.question}` +
+                    `</div>`;
 
-            html += `
-                <div class="wrong-item">
-                    <strong>${item.number}번</strong><br>
-                    ${escapeHtml(item.question)}
-                </div>
-            `;
+            });
 
-        });
+            wrongAnswersDiv.innerHTML = html;
 
+        } else {
 
-        wrongArea.innerHTML = html;
+            wrongAnswersDiv.innerText = "";
 
-    }
+        }
 
-
-    /* =====================================================
-       HTML 안전 처리
-       ===================================================== */
-
-    function escapeHtml(text) {
-
-        return text
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        // 결과 화면에서 배경음악 재개
+        resumeBackgroundMusic();
 
     }
 
 
     /* =====================================================
-       메인 화면
+       프로그램 종료
        ===================================================== */
 
-    function goToMain() {
+    function exitProgram() {
+
+        alert(
+            "프로그램을 종료합니다. 다시 만나요!"
+        );
 
         if ("speechSynthesis" in window) {
 
@@ -1082,6 +1134,14 @@
 
         }
 
+    }
+
+
+    /* =====================================================
+       메인으로 돌아가기
+       ===================================================== */
+
+    function goToMain() {
 
         if (nextQuestionTimer) {
 
@@ -1091,7 +1151,12 @@
 
         }
 
-        isAnswerProcessing = false;
+
+        if ("speechSynthesis" in window) {
+
+            window.speechSynthesis.cancel();
+
+        }
 
 
         document.getElementById("gameScreen")
@@ -1103,92 +1168,13 @@
         document.getElementById("startScreen")
             .classList.remove("hidden");
 
-        // 메인 화면으로 돌아오면 배경음악을 처음부터 다시 재생합니다.
-        playBackgroundMusic();
+        // 메인 화면으로 돌아올 때 배경음악 재개
+        resumeBackgroundMusic();
 
     }
-
-
-
-    /* =====================================================
-       메인 화면 배경음악
-       ===================================================== */
-
-    function playBackgroundMusic() {
-        const music = document.getElementById("backgroundMusic");
-
-        if (!music) {
-            return;
-        }
-
-        music.currentTime = 0;
-
-        const playPromise = music.play();
-
-        if (playPromise !== undefined) {
-            playPromise.catch(function () {
-                // 브라우저 자동재생 정책으로 재생이 막힐 수 있습니다.
-            });
-        }
-    }
-
-
-    function stopBackgroundMusic() {
-        const music = document.getElementById("backgroundMusic");
-
-        if (!music) {
-            return;
-        }
-
-        music.pause();
-        music.currentTime = 0;
-    }
-
-
-    /* =====================================================
-       프로그램 종료
-       ===================================================== */
-
-    function exitProgram() {
-
-        if (
-            confirm(
-                "프로그램을 종료하고 창을 닫으시겠습니까?"
-            )
-        ) {
-
-            window.close();
-
-
-            alert(
-                "브라우저 보안으로 인해 창이 자동으로 닫히지 않을 수 있습니다. 웹 브라우저 탭을 직접 닫아주세요!"
-            );
-
-        }
-
-    }
-
-
-    // 메인 화면에서만 클릭으로 자동재생을 허용합니다.
-    // 난이도 버튼을 누른 뒤에는 startGame()이 화면을 숨겼으므로
-    // 여기서 음악을 다시 재생하지 않습니다.
-    document.getElementById("startScreen").addEventListener("click", function () {
-        const music = document.getElementById("backgroundMusic");
-
-        if (
-            !document.getElementById("startScreen").classList.contains("hidden") &&
-            music &&
-            music.paused
-        ) {
-            const playPromise = music.play();
-
-            if (playPromise !== undefined) {
-                playPromise.catch(function () {});
-            }
-        }
-    });
 
 </script>
 
 </body>
+
 </html>
