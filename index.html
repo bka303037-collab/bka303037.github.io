@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎧 한글 받아쓰기</title>
-
     <style>
         body {
             font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
@@ -236,7 +235,6 @@
 </head>
 
 <body>
-
     <audio id="backgroundMusic" preload="auto" autoplay loop>
         <source src="main_bgm.mp3" type="audio/mpeg">
     </audio>
@@ -245,936 +243,412 @@
         🔊
     </button>
 
-<div class="container">
+    <div class="container">
+        <div id="startScreen" class="screen">
+            <h1>🎧 한글 받아쓰기</h1>
+            <p class="info-text">원하는 난이도를 선택하여 타자 연습을 시작하세요!</p>
 
-    <!-- 시작 화면 -->
-    <div id="startScreen" class="screen">
-
-        <h1>🎧 한글 받아쓰기</h1>
-
-        <p class="info-text">
-            원하는 난이도를 선택하여 타자 연습을 시작하세요!
-        </p>
-
-        <div style="display: flex; flex-direction: column; gap: 5px; max-width: 320px; margin: 0 auto;">
-
-            <button class="btn-easy" onclick="startGame('easy')">
-                🟢 쉬움 (단어 10문제)
-            </button>
-
-            <button class="btn-normal" onclick="startGame('normal')">
-                🔵 보통 (어구 13문제)
-            </button>
-
-            <button class="btn-hard" onclick="startGame('hard')">
-                🔴 어려움 (문장 15문제)
-            </button>
-
-        </div>
-
-        <br><br>
-
-        <button class="btn-exit" onclick="exitProgram()">
-            프로그램 종료
-        </button>
-
-    </div>
-
-
-    <!-- 게임 화면 -->
-    <div id="gameScreen" class="screen hidden">
-
-        <h2 id="difficultyTitle">난이도</h2>
-
-        <div id="progressInfo">
-            문제 1 / 10
-        </div>
-
-        <div>
-            <button class="btn-action" onclick="playVoice()">
-                🔊 소리 듣기
-            </button>
-
-            <button class="btn-listen" onclick="playVoice()">
-                🔄 다시 듣기
-            </button>
-        </div>
-
-        <input
-            type="text"
-            id="userInput"
-            placeholder="들린 소리를 타이핑하세요"
-            onkeydown="if(event.key === 'Enter') checkAnswer()"
-            autocomplete="off"
-        >
-
-        <div id="hintArea"></div>
-
-        <div>
-
-            <button
-                class="btn-normal"
-                style="background-color: #3b82f6; color: white;"
-                onclick="checkAnswer()">
-                정답 확인
-            </button>
-
-            <button class="btn-hint" onclick="showHint()">
-                💡 힌트
-            </button>
-
-            <button class="btn-exit" onclick="goToMain()">
-                메인으로
-            </button>
-
-        </div>
-
-        <div id="result"></div>
-
-    </div>
-
-
-    <!-- 결과 화면 -->
-    <div id="scoreScreen" class="screen hidden">
-
-        <h1>🎉 받아쓰기 결과</h1>
-
-        <div class="score-box">
-
-            <div id="finalScore">
-                100점
+            <div style="display: flex; flex-direction: column; gap: 5px; max-width: 320px; margin: 0 auto;">
+                <button class="btn-easy" onclick="startGame('easy')">🟢 쉬움 (단어 10문제)</button>
+                <button class="btn-normal" onclick="startGame('normal')">🔵 보통 (어구 13문제)</button>
+                <button class="btn-hard" onclick="startGame('hard')">🔴 어려움 (문장 15문제)</button>
             </div>
 
-            <div id="scoreDetail">
-                10문제 중 10문제 정답
-            </div>
-
+            <br><br>
+            <button class="btn-exit" onclick="exitProgram()">프로그램 종료</button>
         </div>
 
-        <div id="perfectMessage"></div>
+        <div id="gameScreen" class="screen hidden">
+            <h2 id="difficultyTitle">난이도</h2>
 
-        <div id="wrongAnswers"></div>
+            <div id="progressInfo">문제 1 / 10</div>
 
-        <button
-            class="btn-normal"
-            style="background-color: #3b82f6; color: white;"
-            onclick="goToMain()">
-            🏠 메인으로
-        </button>
+            <div>
+                <button class="btn-action" onclick="playVoice()">🔊 소리 듣기</button>
+                <button class="btn-listen" onclick="playVoice()">🔄 다시 듣기</button>
+            </div>
 
+            <input type="text" id="userInput" placeholder="들린 소리를 타이핑하세요" onkeydown="if(event.key === 'Enter') checkAnswer()" autocomplete="off">
+
+            <div id="hintArea"></div>
+
+            <div>
+                <button class="btn-normal" style="background-color: #3b82f6; color: white;" onclick="checkAnswer()">정답 확인</button>
+                <button class="btn-hint" onclick="showHint()">💡 힌트</button>
+                <button class="btn-exit" onclick="goToMain()">메인으로</button>
+            </div>
+
+            <div id="result"></div>
+        </div>
+
+        <div id="scoreScreen" class="screen hidden">
+            <h1>🎉 받아쓰기 결과</h1>
+            <div class="score-box">
+                <div id="finalScore">100점</div>
+                <div id="scoreDetail">10문제 중 10문제 정답</div>
+            </div>
+
+            <div id="perfectMessage"></div>
+            <div id="wrongAnswers"></div>
+
+            <button class="btn-normal" style="background-color: #3b82f6; color: white;" onclick="goToMain()">🏠 메인으로</button>
+        </div>
     </div>
 
-</div>
-
-
-<script>
-
-    /* =====================================================
-       문제 데이터
-       ===================================================== */
-
-    const database = {
-
-        /*
-         * 쉬움
-         * 전체 30개 중 매 게임 10개를 무작위 출제
-         */
-        easy: [
-
-            "학교",
-            "운동장",
-            "하늘",
-            "구름",
-            "나무",
-            "연필",
-            "친구",
-            "책가방",
-            "교실",
-            "선생님",
-            "사물함",
-            "실내화",
-            "칠판",
-            "발표",
-            "태극기",
-
-            "공책",
-            "지우개",
-            "책상",
-            "의자",
-            "교과서",
-            "수업",
-            "숙제",
-            "도서관",
-            "급식",
-            "복도",
-            "교문",
-            "알림장",
-            "시간표",
-            "체육관",
-            "음악실"
-
-        ],
-
-
-        /*
-         * 보통
-         * 전체 25개 중 매 게임 13개 출제
-         */
-        normal: [
-
-            "즐거운 학교",
-            "넓은 운동장",
-            "푸른 하늘",
-            "하얀 구름",
-            "커다란 나무",
-            "새 연필",
-            "좋은 친구",
-            "무거운 책가방",
-            "밝은 교실",
-            "친절한 선생님",
-            "깨끗한 사물함",
-            "편안한 실내화",
-            "깨끗한 칠판",
-
-            "새 공책",
-            "작은 지우개",
-            "넓은 책상",
-            "편안한 의자",
-            "재미있는 교과서",
-            "즐거운 수업",
-            "많은 숙제",
-            "조용한 도서관",
-            "맛있는 급식",
-            "긴 복도",
-            "학교 교문",
-            "꼼꼼한 알림장"
-
-        ],
-
-
-        /*
-         * 어려움
-         * 전체 30개 중 매 게임 15개 출제
-         */
-        hard: [
-
-            "나는 아침마다 학교에 가서 친구들을 만납니다.",
-
-            "친구들과 함께 넓은 운동장에서 즐겁게 놀았습니다.",
-
-            "오늘은 하늘에 하얀 구름이 많이 떠 있습니다.",
-
-            "학교 운동장 옆에 커다란 나무가 한 그루 있습니다.",
-
-            "나는 수업 시간에 새 연필로 열심히 글씨를 씁니다.",
-
-            "친구와 함께 책가방을 메고 교실로 들어갔습니다.",
-
-            "선생님께서는 교실에서 재미있는 이야기를 해 주셨습니다.",
-
-            "수업이 끝난 뒤에 사용한 물건을 사물함에 정리했습니다.",
-
-            "학교에 갈 때에는 실내화를 신고 교실 안으로 들어갑니다.",
-
-            "선생님께서 깨끗한 칠판에 오늘 배울 내용을 적으셨습니다.",
-
-            "나는 친구들 앞에서 준비한 내용을 자신 있게 발표했습니다.",
-
-            "교실에 있는 태극기를 보며 우리나라를 사랑하는 마음을 가졌습니다.",
-
-            "친구들과 서로 도와주며 즐겁고 행복한 학교생활을 하고 있습니다.",
-
-            "수업이 끝난 후 책가방을 정리하고 친구들과 운동장에서 놀았습니다.",
-
-            "학교에서는 선생님과 친구들을 배려하고 서로 사이좋게 지내야 합니다.",
-
-            "나는 새 공책을 꺼내 오늘 배운 내용을 꼼꼼하게 적었습니다.",
-
-            "지우개로 틀린 글씨를 지우고 다시 바르게 써 보았습니다.",
-
-            "책상 위에 교과서와 연필을 가지런히 준비했습니다.",
-
-            "수업이 시작되기 전에 의자에 바르게 앉았습니다.",
-
-            "숙제를 모두 끝낸 뒤 알림장을 확인했습니다.",
-
-            "도서관에서는 다른 친구들을 위해 조용히 책을 읽어야 합니다.",
-
-            "점심시간에는 친구들과 함께 맛있는 급식을 먹었습니다.",
-
-            "친구들과 복도를 걸을 때에는 뛰지 않고 천천히 걸어야 합니다.",
-
-            "아침에 교문을 지나 선생님께 밝게 인사를 했습니다.",
-
-            "시간표를 확인하고 오늘 필요한 교과서를 책가방에 넣었습니다.",
-
-            "체육관에서 친구들과 함께 재미있는 체육 수업을 했습니다.",
-
-            "음악실에서 선생님의 설명을 듣고 노래를 따라 불렀습니다.",
-
-            "수업 시간에는 선생님의 말씀을 잘 듣고 집중해야 합니다.",
-
-            "학교에서는 친구의 물건을 허락 없이 가져가면 안 됩니다."
-
-        ]
-
-    };
-
-
-    /* =====================================================
-       게임 설정
-       ===================================================== */
-
-    let currentDifficulty = "";
-
-    let gameQuestions = [];
-
-    let currentQuestionIndex = 0;
-
-    let currentSentence = "";
-
-    let maxQuestions = 0;
-
-    let currentWrongCount = 0;
-
-    let correctCount = 0;
-
-    let wrongAnswers = [];
-
-    let nextQuestionTimer = null;
-    let isAnswerProcessing = false;
-
-    let backgroundMusicPlaying = true;
-
-
-    /*
-     * 직전 게임에서 사용했던 문제를 저장합니다.
-     * 다음 게임에서는 가능하면 다른 문제를 먼저 선택합니다.
-     */
-    const previousQuestions = {
-        easy: [],
-        normal: [],
-        hard: []
-    };
-
-
-    /* =====================================================
-       배경음악 제어
-       ===================================================== */
-
-    function toggleBackgroundMusic() {
-
-        const audio = document.getElementById("backgroundMusic");
-        const button = document.getElementById("musicToggle");
-
-        if (backgroundMusicPlaying) {
-            audio.pause();
-            button.textContent = "🔇";
-            backgroundMusicPlaying = false;
-        } else {
-            audio.play();
-            button.textContent = "🔊";
-            backgroundMusicPlaying = true;
-        }
-    }
-
-    function stopBackgroundMusic() {
-        const audio = document.getElementById("backgroundMusic");
-        audio.pause();
-        backgroundMusicPlaying = false;
-        document.getElementById("musicToggle").textContent = "🔇";
-    }
-
-    function resumeBackgroundMusic() {
-        const audio = document.getElementById("backgroundMusic");
-        audio.play();
-        backgroundMusicPlaying = true;
-        document.getElementById("musicToggle").textContent = "🔊";
-    }
-
-
-    /* =====================================================
-       문제 선택
-       ===================================================== */
-
-    function selectQuestions(difficulty, count) {
-
-        const allQuestions = [...database[difficulty]];
-
-        const previous = previousQuestions[difficulty];
-
-        /*
-         * 직전 게임에 나오지 않았던 문제를 앞쪽으로 배치합니다.
-         */
-        const newQuestions = allQuestions.filter(
-            question => !previous.includes(question)
-        );
-
-        const oldQuestions = allQuestions.filter(
-            question => previous.includes(question)
-        );
-
-
-        // 각각 무작위로 섞습니다.
-        newQuestions.sort(() => Math.random() - 0.5);
-        oldQuestions.sort(() => Math.random() - 0.5);
-
-
-        /*
-         * 새 문제를 먼저 사용하고,
-         * 부족하면 이전 문제도 사용합니다.
-         */
-        const candidates = [
-            ...newQuestions,
-            ...oldQuestions
-        ];
-
-
-        const selected = candidates.slice(0, count);
-
-
-        // 이번 게임 문제를 다음 게임의 제외 목록으로 저장
-        previousQuestions[difficulty] = selected;
-
-
-        return selected;
-    }
-
-
-    /* =====================================================
-       게임 시작
-       ===================================================== */
-
-    function startGame(difficulty) {
-
-        // 난이도를 선택하면 배경음악을 정지합니다.
-        stopBackgroundMusic();
-
-        if (nextQuestionTimer) {
-            clearTimeout(nextQuestionTimer);
-            nextQuestionTimer = null;
-        }
-
-
-        currentDifficulty = difficulty;
-
-
-        /*
-         * 난이도별 실제 출제 문제 수
-         */
-        if (difficulty === "easy") {
-
-            maxQuestions = 10;
-
-        } else if (difficulty === "normal") {
-
-            maxQuestions = 13;
-
-        } else {
-
-            maxQuestions = 15;
-
-        }
-
-
-        /*
-         * 문제를 선택합니다.
-         */
-        gameQuestions =
-            selectQuestions(difficulty, maxQuestions);
-
-
-        currentQuestionIndex = 0;
-
-        correctCount = 0;
-
-        wrongAnswers = [];
-
-        currentWrongCount = 0;
-        isAnswerProcessing = false;
-
-
-        document.getElementById("startScreen")
-            .classList.add("hidden");
-
-        document.getElementById("scoreScreen")
-            .classList.add("hidden");
-
-        document.getElementById("gameScreen")
-            .classList.remove("hidden");
-
-
-        const diffNames = {
-
-            easy: "🟢 쉬움 난이도",
-
-            normal: "🔵 보통 난이도",
-
-            hard: "🔴 어려움 난이도"
-
+    <script>
+        const database = {
+            easy: [
+                "학교", "운동장", "하늘", "구름", "나무", "연필", "친구", "책가방", "교실", "선생님",
+                "사물함", "실내화", "칠판", "발표", "태극기", "공책", "지우개", "책상", "의자",
+                "교과서", "수업", "숙제", "도서관", "급식", "복도", "교문", "알림장", "시간표",
+                "체육관", "음악실"
+            ],
+            normal: [
+                "즐거운 학교", "넓은 운동장", "푸른 하늘", "하얀 구름", "커다란 나무", "새 연필",
+                "좋은 친구", "무거운 책가방", "밝은 교실", "친절한 선생님", "깨끗한 사물함",
+                "편안한 실내화", "깨끗한 칠판", "새 공책", "작은 지우개", "넓은 책상", "편안한 의자",
+                "재미있는 교과서", "즐거운 수업", "많은 숙제", "조용한 도서관", "맛있는 급식",
+                "긴 복도", "학교 교문", "꼼꼼한 알림장"
+            ],
+            hard: [
+                "나는 아침마다 학교에 가서 친구들을 만납니다.",
+                "친구들과 함께 넓은 운동장에서 즐겁게 놀았습니다.",
+                "오늘은 하늘에 하얀 구름이 많이 떠 있습니다.",
+                "학교 운동장 옆에 커다란 나무가 한 그루 있습니다.",
+                "나는 수업 시간에 새 연필로 열심히 글씨를 씁니다.",
+                "친구와 함께 책가방을 메고 교실로 들어갔습니다.",
+                "선생님께서는 교실에서 재미있는 이야기를 해 주셨습니다.",
+                "수업이 끝난 뒤에 사용한 물건을 사물함에 정리했습니다.",
+                "학교에 갈 때에는 실내화를 신고 교실 안으로 들어갑니다.",
+                "선생님께서 깨끗한 칠판에 오늘 배울 내용을 적으셨습니다.",
+                "나는 친구들 앞에서 준비한 내용을 자신 있게 발표했습니다.",
+                "교실에 있는 태극기를 보며 우리나라를 사랑하는 마음을 가졌습니다.",
+                "친구들과 서로 도와주며 즐겁고 행복한 학교생활을 하고 있습니다.",
+                "수업이 끝난 후 책가방을 정리하고 친구들과 운동장에서 놀았습니다.",
+                "학교에서는 선생님과 친구들을 배려하고 서로 사이좋게 지내야 합니다.",
+                "나는 새 공책을 꺼내 오늘 배운 내용을 꼼꼼하게 적었습니다.",
+                "지우개로 틀린 글씨를 지우고 다시 바르게 써 보았습니다.",
+                "책상 위에 교과서와 연필을 가지런히 준비했습니다.",
+                "수업이 시작되기 전에 의자에 바르게 앉았습니다.",
+                "숙제를 모두 끝낸 뒤 알림장을 확인했습니다.",
+                "도서관에서는 다른 친구들을 위해 조용히 책을 읽어야 합니다.",
+                "점심시간에는 친구들과 함께 맛있는 급식을 먹었습니다.",
+                "친구들과 복도를 걸을 때에는 뛰지 않고 천천히 걸어야 합니다.",
+                "아침에 교문을 지나 선생님께 밝게 인사를 했습니다.",
+                "시간표를 확인하고 오늘 필요한 교과서를 책가방에 넣었습니다.",
+                "체육관에서 친구들과 함께 재미있는 체육 수업을 했습니다.",
+                "음악실에서 선생님의 설명을 듣고 노래를 따라 불렀습니다.",
+                "수업 시간에는 선생님의 말씀을 잘 듣고 집중해야 합니다.",
+                "학교에서는 친구의 물건을 허락 없이 가져가면 안 됩니다."
+            ]
         };
 
+        let currentDifficulty = "";
+        let gameQuestions = [];
+        let currentQuestionIndex = 0;
+        let currentSentence = "";
+        let maxQuestions = 0;
+        let currentWrongCount = 0;
+        let correctCount = 0;
+        let wrongAnswers = [];
+        let nextQuestionTimer = null;
+        let isAnswerProcessing = false;
+        let backgroundMusicPlaying = true;
+        let selectedVoice = null;
 
-        document.getElementById("difficultyTitle").innerText =
-            diffNames[difficulty];
+        const previousQuestions = {
+            easy: [],
+            normal: [],
+            hard: []
+        };
 
+        function loadVoices() {
+            if (!('speechSynthesis' in window)) return;
+            const voices = window.speechSynthesis.getVoices();
+            const koreanVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ko'));
 
-        nextQuestion();
-
-    }
-
-
-    /* =====================================================
-       다음 문제
-       ===================================================== */
-
-    function nextQuestion() {
-
-        if (currentQuestionIndex >= maxQuestions) {
-
-            showFinalResult();
-
-            return;
+            selectedVoice = koreanVoices.find(v => v.name.toLowerCase().includes('google'))
+                || koreanVoices.find(v => v.name.toLowerCase().includes('narae'))
+                || koreanVoices[0]
+                || null;
         }
 
-
-        currentWrongCount = 0;
-        isAnswerProcessing = false;
-
-
-        currentSentence =
-            gameQuestions[currentQuestionIndex];
-
-
-        document.getElementById("progressInfo").innerText =
-            `문제 ${currentQuestionIndex + 1} / ${maxQuestions}`;
-
-
-        document.getElementById("userInput").value = "";
-
-        document.getElementById("result").innerText = "";
-
-        document.getElementById("hintArea").innerText = "";
-
-
-        document.getElementById("userInput").focus();
-
-
-        setTimeout(playVoice, 500);
-
-    }
-
-
-    /* =====================================================
-       음성 재생
-       ===================================================== */
-
-    function playVoice() {
-
-        if (!("speechSynthesis" in window)) {
-
-            alert(
-                "이 브라우저는 음성 합성을 지원하지 않습니다."
-            );
-
-            return;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices();
         }
 
+        function toggleBackgroundMusic() {
+            const audio = document.getElementById('backgroundMusic');
+            const button = document.getElementById('musicToggle');
 
-        window.speechSynthesis.cancel();
-
-
-        const speech =
-            new SpeechSynthesisUtterance(currentSentence);
-
-
-        speech.lang = "ko-KR";
-
-
-        if (currentDifficulty === "hard") {
-
-            speech.rate = 0.9;
-
-        } else if (currentDifficulty === "normal") {
-
-            speech.rate = 0.8;
-
-        } else {
-
-            speech.rate = 0.75;
-
+            if (backgroundMusicPlaying) {
+                audio.pause();
+                button.textContent = '🔇';
+                backgroundMusicPlaying = false;
+            } else {
+                audio.play();
+                button.textContent = '🔊';
+                backgroundMusicPlaying = true;
+            }
         }
 
+        function stopBackgroundMusic() {
+            const audio = document.getElementById('backgroundMusic');
+            audio.pause();
+            backgroundMusicPlaying = false;
+            document.getElementById('musicToggle').textContent = '🔇';
+        }
 
-        window.speechSynthesis.speak(speech);
+        function resumeBackgroundMusic() {
+            const audio = document.getElementById('backgroundMusic');
+            audio.play();
+            backgroundMusicPlaying = true;
+            document.getElementById('musicToggle').textContent = '🔊';
+        }
 
-    }
+        function selectQuestions(difficulty, count) {
+            const allQuestions = [...database[difficulty]];
+            const previous = previousQuestions[difficulty];
+            const newQuestions = allQuestions.filter(question => !previous.includes(question));
+            const oldQuestions = allQuestions.filter(question => previous.includes(question));
 
+            newQuestions.sort(() => Math.random() - 0.5);
+            oldQuestions.sort(() => Math.random() - 0.5);
 
-    /* =====================================================
-       힌트 만들기
-       ===================================================== */
+            const candidates = [...newQuestions, ...oldQuestions];
+            const selected = candidates.slice(0, count);
+            previousQuestions[difficulty] = selected;
+            return selected;
+        }
 
-    function createHint(text) {
+        function startGame(difficulty) {
+            stopBackgroundMusic();
 
-        let result = "";
-
-
-        for (let i = 0; i < text.length; i++) {
-
-            const char = text[i];
-
-
-            // 공백
-            if (char === " ") {
-
-                result += " ";
-
-                continue;
-
+            if (nextQuestionTimer) {
+                clearTimeout(nextQuestionTimer);
+                nextQuestionTimer = null;
             }
 
+            currentDifficulty = difficulty;
 
-            // 문장부호
-            if (/[.,!?]/.test(char)) {
+            if (difficulty === 'easy') maxQuestions = 10;
+            else if (difficulty === 'normal') maxQuestions = 13;
+            else maxQuestions = 15;
 
-                result += char;
+            gameQuestions = selectQuestions(difficulty, maxQuestions);
+            currentQuestionIndex = 0;
+            correctCount = 0;
+            wrongAnswers = [];
+            currentWrongCount = 0;
+            isAnswerProcessing = false;
 
-                continue;
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('scoreScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
 
+            const diffNames = {
+                easy: '🟢 쉬움 난이도',
+                normal: '🔵 보통 난이도',
+                hard: '🔴 어려움 난이도'
+            };
+
+            document.getElementById('difficultyTitle').innerText = diffNames[difficulty];
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex >= maxQuestions) {
+                showFinalResult();
+                return;
             }
 
+            currentWrongCount = 0;
+            isAnswerProcessing = false;
+            currentSentence = gameQuestions[currentQuestionIndex];
 
-            /*
-             * 각 단어의 첫 글자와 마지막 글자를
-             * 보여주는 방식입니다.
-             */
+            document.getElementById('progressInfo').innerText = `문제 ${currentQuestionIndex + 1} / ${maxQuestions}`;
+            document.getElementById('userInput').value = '';
+            document.getElementById('result').innerText = '';
+            document.getElementById('hintArea').innerText = '';
+            document.getElementById('userInput').focus();
 
-            let previousChar = i > 0
-                ? text[i - 1]
-                : " ";
+            setTimeout(playVoice, 500);
+        }
 
-            let nextChar = i < text.length - 1
-                ? text[i + 1]
-                : " ";
-
-
-            // 단어의 첫 글자
-            if (i === 0 || previousChar === " ") {
-
-                result += char;
-
+        function playVoice() {
+            if (!('speechSynthesis' in window)) {
+                alert('이 브라우저는 음성 합성을 지원하지 않습니다.');
+                return;
             }
 
-            // 단어의 마지막 글자
-            else if (
-                i === text.length - 1 ||
-                nextChar === " "
-            ) {
-
-                result += char;
-
+            const audio = document.getElementById('backgroundMusic');
+            const wasPlaying = backgroundMusicPlaying;
+            if (wasPlaying) {
+                audio.pause();
             }
-
-            // 가운데 글자
-            else {
-
-                result += "○";
-
-            }
-
-        }
-
-
-        return result;
-    }
-
-
-    /* =====================================================
-       힌트 표시
-       ===================================================== */
-
-    function showHint() {
-
-        document.getElementById("hintArea").innerText =
-            `💡 힌트: ${createHint(currentSentence)}`;
-
-    }
-
-
-    /* =====================================================
-       정답 정리
-       ===================================================== */
-
-    function normalizeAnswer(text) {
-
-        return text
-            .trim()
-            .replace(/[.,!?]/g, "");
-
-    }
-
-
-    /* =====================================================
-       정답 확인
-       ===================================================== */
-
-    function checkAnswer() {
-
-        // 정답 처리 후 다음 문제로 넘어가기 전에는
-        // Enter나 버튼을 여러 번 눌러도 중복 처리하지 않습니다.
-        if (isAnswerProcessing) {
-            return;
-        }
-
-        const input =
-            document.getElementById("userInput");
-
-        const resultDiv =
-            document.getElementById("result");
-
-        const userInput =
-            input.value.trim();
-
-
-        if (!userInput) {
-
-            resultDiv.innerText =
-                "⚠️ 글자를 입력해주세요!";
-
-            resultDiv.style.color =
-                "#f59e0b";
-
-            input.focus();
-
-            return;
-        }
-
-
-        const cleanUserInput =
-            normalizeAnswer(userInput);
-
-        const cleanAnswer =
-            normalizeAnswer(currentSentence);
-
-
-        // 정답
-        if (cleanUserInput === cleanAnswer) {
-
-            correctCount++;
-
-
-            resultDiv.innerText =
-                "⭕ 정답이에요! 참 잘했어요!";
-
-            resultDiv.style.color =
-                "#10b981";
-
-
-            document.getElementById("hintArea")
-                .innerText = "";
-
-
-            currentQuestionIndex++;
-
-            isAnswerProcessing = true;
-
-            nextQuestionTimer =
-                setTimeout(nextQuestion, 1200);
-
-
-            return;
-        }
-
-
-        // 오답
-        currentWrongCount++;
-
-
-        // 첫 번째 오답
-        if (currentWrongCount === 1) {
-
-            resultDiv.innerText =
-                "❌ 아쉬워요! 힌트를 보고 다시 도전해 보세요.";
-
-            resultDiv.style.color =
-                "#ef4444";
-
-
-            showHint();
-
-            input.focus();
-
-            return;
-        }
-
-
-        /*
-         * 두 번째 오답부터는 정답을 알려줍니다.
-         */
-
-        resultDiv.innerText =
-            `❌ 정답은 "${currentSentence}"입니다.`;
-
-        resultDiv.style.color =
-            "#ef4444";
-
-
-        wrongAnswers.push({
-
-            number: currentQuestionIndex + 1,
-
-            question: currentSentence
-
-        });
-
-
-        currentQuestionIndex++;
-
-        isAnswerProcessing = true;
-
-        nextQuestionTimer =
-            setTimeout(nextQuestion, 1800);
-
-    }
-
-
-    /* =====================================================
-       최종 결과
-       ===================================================== */
-
-    function showFinalResult() {
-
-        if ("speechSynthesis" in window) {
 
             window.speechSynthesis.cancel();
 
+            const speech = new SpeechSynthesisUtterance(currentSentence);
+            speech.lang = 'ko-KR';
+            speech.volume = 1.0;
+            speech.pitch = 1.2;
+            speech.rate = currentDifficulty === 'hard' ? 0.9 : currentDifficulty === 'normal' ? 0.8 : 0.75;
+
+            if (selectedVoice) {
+                speech.voice = selectedVoice;
+            }
+
+            speech.onend = () => {
+                if (wasPlaying) {
+                    audio.play();
+                }
+            };
+
+            window.speechSynthesis.speak(speech);
         }
 
+        function createHint(text) {
+            let result = '';
 
-        document.getElementById("gameScreen")
-            .classList.add("hidden");
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
 
-        document.getElementById("scoreScreen")
-            .classList.remove("hidden");
+                if (char === ' ') {
+                    result += ' ';
+                    continue;
+                }
 
+                if (/[.,!?]/.test(char)) {
+                    result += char;
+                    continue;
+                }
 
-        const score =
-            Math.round(
-                (correctCount / maxQuestions) * 100
-            );
+                let previousChar = i > 0 ? text[i - 1] : ' ';
+                let nextChar = i < text.length - 1 ? text[i + 1] : ' ';
 
+                if (i === 0 || previousChar === ' ') {
+                    result += char;
+                } else if (i === text.length - 1 || nextChar === ' ') {
+                    result += char;
+                } else {
+                    result += '○';
+                }
+            }
 
-        document.getElementById("finalScore").innerText =
-            `${score}점`;
-
-
-        document.getElementById("scoreDetail").innerText =
-            `${maxQuestions}문제 중 ${correctCount}문제 정답`;
-
-
-        const perfectMessage =
-            document.getElementById("perfectMessage");
-
-        if (score === 100) {
-
-            perfectMessage.innerHTML =
-                '<div class="perfect-message">🌟 완벽한 점수! 정말 잘했어요! 🌟</div>';
-
-        } else {
-
-            perfectMessage.innerText = "";
-
+            return result;
         }
 
+        function showHint() {
+            document.getElementById('hintArea').innerText = `💡 힌트: ${createHint(currentSentence)}`;
+        }
 
-        const wrongAnswersDiv =
-            document.getElementById("wrongAnswers");
+        function normalizeAnswer(text) {
+            return text.trim().replace(/[.,!?]/g, '');
+        }
 
-        if (wrongAnswers.length > 0) {
+        function checkAnswer() {
+            if (isAnswerProcessing) return;
 
-            let html = "<h3>📝 틀린 문제</h3>";
+            const input = document.getElementById('userInput');
+            const resultDiv = document.getElementById('result');
+            const userInput = input.value.trim();
 
-            wrongAnswers.forEach(item => {
+            if (!userInput) {
+                resultDiv.innerText = '⚠️ 글자를 입력해주세요!';
+                resultDiv.style.color = '#f59e0b';
+                input.focus();
+                return;
+            }
 
-                html +=
-                    `<div class="wrong-item">` +
-                    `<strong>문제 ${item.number}:</strong> ${item.question}` +
-                    `</div>`;
+            const cleanUserInput = normalizeAnswer(userInput);
+            const cleanAnswer = normalizeAnswer(currentSentence);
 
+            if (cleanUserInput === cleanAnswer) {
+                correctCount++;
+                resultDiv.innerText = '⭕ 정답이에요! 참 잘했어요!';
+                resultDiv.style.color = '#10b981';
+                document.getElementById('hintArea').innerText = '';
+
+                currentQuestionIndex++;
+                isAnswerProcessing = true;
+                nextQuestionTimer = setTimeout(nextQuestion, 1200);
+                return;
+            }
+
+            currentWrongCount++;
+
+            if (currentWrongCount === 1) {
+                resultDiv.innerText = '❌ 아쉬워요! 힌트를 보고 다시 도전해 보세요.';
+                resultDiv.style.color = '#ef4444';
+                showHint();
+                input.focus();
+                return;
+            }
+
+            resultDiv.innerText = `❌ 정답은 "${currentSentence}" 입니다.`;
+            resultDiv.style.color = '#ef4444';
+
+            wrongAnswers.push({
+                number: currentQuestionIndex + 1,
+                question: currentSentence
             });
 
-            wrongAnswersDiv.innerHTML = html;
-
-        } else {
-
-            wrongAnswersDiv.innerText = "";
-
+            currentQuestionIndex++;
+            isAnswerProcessing = true;
+            nextQuestionTimer = setTimeout(nextQuestion, 1800);
         }
 
-        // 결과 화면에서 배경음악 재개
-        resumeBackgroundMusic();
+        function showFinalResult() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 
-    }
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('scoreScreen').classList.remove('hidden');
 
+            const score = Math.round((correctCount / maxQuestions) * 100);
+            document.getElementById('finalScore').innerText = `${score}점`;
+            document.getElementById('scoreDetail').innerText = `${maxQuestions}문제 중 ${correctCount}문제 정답`;
 
-    /* =====================================================
-       프로그램 종료
-       ===================================================== */
+            const perfectMessage = document.getElementById('perfectMessage');
+            if (score === 100) {
+                perfectMessage.innerHTML = '<div class="perfect-message">✨ 완벽해요! 아주 훌륭합니다! ✨</div>';
+            } else {
+                perfectMessage.innerText = '';
+            }
 
-    function exitProgram() {
+            const wrongAnswersDiv = document.getElementById('wrongAnswers');
+            if (wrongAnswers.length > 0) {
+                let html = '<h3>오답 정리</h3>';
+                wrongAnswers.forEach(item => {
+                    html += `<div class="wrong-item"><strong>${item.number}.</strong> ${item.question}</div>`;
+                });
+                wrongAnswersDiv.innerHTML = html;
+            } else {
+                wrongAnswersDiv.innerText = '';
+            }
 
-        alert(
-            "프로그램을 종료합니다. 다시 만나요!"
-        );
-
-        if ("speechSynthesis" in window) {
-
-            window.speechSynthesis.cancel();
-
+            resumeBackgroundMusic();
         }
 
-    }
-
-
-    /* =====================================================
-       메인으로 돌아가기
-       ===================================================== */
-
-    function goToMain() {
-
-        if (nextQuestionTimer) {
-
-            clearTimeout(nextQuestionTimer);
-
-            nextQuestionTimer = null;
-
+        function exitProgram() {
+            alert('프로그램을 종료합니다.');
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         }
 
+        function goToMain() {
+            if (nextQuestionTimer) {
+                clearTimeout(nextQuestionTimer);
+                nextQuestionTimer = null;
+            }
 
-        if ("speechSynthesis" in window) {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 
-            window.speechSynthesis.cancel();
-
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('scoreScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            resumeBackgroundMusic();
         }
-
-
-        document.getElementById("gameScreen")
-            .classList.add("hidden");
-
-        document.getElementById("scoreScreen")
-            .classList.add("hidden");
-
-        document.getElementById("startScreen")
-            .classList.remove("hidden");
-
-        // 메인 화면으로 돌아올 때 배경음악 재개
-        resumeBackgroundMusic();
-
-    }
-
-</script>
-
+    </script>
 </body>
-
 </html>
