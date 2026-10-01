@@ -5,12 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎧 한글 받아쓰기</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
             text-align: center;
             background: linear-gradient(135deg, #e0f2fe 0%, #fbcfe8 100%);
             min-height: 100vh;
             margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -211,35 +216,43 @@
 
         .music-control {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
+            bottom: 30px;
+            right: 30px;
+            background: #ff6b6b;
             border-radius: 50%;
-            padding: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+            box-shadow: 0 8px 16px rgba(255, 107, 107, 0.4);
             cursor: pointer;
-            z-index: 1000;
-            width: 45px;
-            height: 45px;
-            display: flex;
+            z-index: 9999 !important;
+            width: 60px;
+            height: 60px;
+            display: flex !important;
             align-items: center;
             justify-content: center;
             border: none;
-            font-size: 20px;
+            font-size: 28px;
+            transition: all 0.2s;
         }
 
         .music-control:hover {
-            background: #f0f0f0;
+            background: #ff5252;
+            transform: scale(1.1);
+            box-shadow: 0 12px 24px rgba(255, 107, 107, 0.6);
+        }
+
+        .music-control:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 
 <body>
-    <!-- autoplay: Chrome 자동재생 가능하려면 muted 필수, 그 후 사용자 상호작용으로 음소거 해제 -->
-    <audio id="backgroundMusic" preload="auto" autoplay loop muted>
+    <!-- 배경음악 -->
+    <audio id="backgroundMusic" preload="auto" autoplay loop muted crossorigin="anonymous">
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- 음악 제어 버튼 -->
     <button class="music-control" id="musicToggle" onclick="toggleBackgroundMusic()" title="음악 재생/일시정지">
         🔊
     </button>
@@ -355,7 +368,7 @@
         let nextQuestionTimer = null;
         let isAnswerProcessing = false;
         let backgroundMusicPlaying = false;
-        let audioUnlocked = false; // 음소거 해제 여부
+        let audioUnlocked = false;
         let selectedVoice = null;
 
         const previousQuestions = {
@@ -380,7 +393,6 @@
             loadVoices();
         }
 
-        // Chrome 자동재생: muted 상태로 자동 시작
         window.addEventListener('load', function() {
             const audio = document.getElementById('backgroundMusic');
             audio.muted = true;
@@ -388,9 +400,9 @@
             audio.play().catch(err => console.log('자동재생 시도:', err));
             backgroundMusicPlaying = true;
             updateMusicButton();
+            console.log('페이지 로드 완료. 음악 버튼이 보이나요?');
         });
 
-        // 사용자 첫 상호작용: 음소거 해제
         document.addEventListener('click', function() {
             unlockAudio();
         }, { once: true });
@@ -404,12 +416,14 @@
             const audio = document.getElementById('backgroundMusic');
             audio.muted = false;
             audioUnlocked = true;
-            console.log('오디오 음소거 해제됨');
+            console.log('오디오 음소거 해제됨 - 이제 음악이 들릴 거예요!');
         }
 
         function updateMusicButton() {
             const button = document.getElementById('musicToggle');
-            button.textContent = backgroundMusicPlaying ? '🔊' : '🔇';
+            if (button) {
+                button.textContent = backgroundMusicPlaying ? '🔊' : '🔇';
+            }
         }
 
         function toggleBackgroundMusic() {
@@ -419,7 +433,7 @@
                 audio.pause();
                 backgroundMusicPlaying = false;
             } else {
-                unlockAudio(); // 음소거 해제
+                unlockAudio();
                 audio.play().catch(err => console.log('재생 실패:', err));
                 backgroundMusicPlaying = true;
             }
