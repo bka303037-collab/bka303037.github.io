@@ -235,7 +235,7 @@
 </head>
 
 <body>
-    <audio id="backgroundMusic" preload="auto" autoplay loop>
+    <audio id="backgroundMusic" preload="auto" loop muted>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
 
@@ -353,7 +353,7 @@
         let wrongAnswers = [];
         let nextQuestionTimer = null;
         let isAnswerProcessing = false;
-        let backgroundMusicPlaying = true;
+        let backgroundMusicPlaying = false;
         let selectedVoice = null;
 
         const previousQuestions = {
@@ -378,6 +378,28 @@
             loadVoices();
         }
 
+        // 페이지 로드 시 음악 시작
+        window.addEventListener('load', function() {
+            const audio = document.getElementById('backgroundMusic');
+            audio.muted = false;
+            audio.play().catch(err => console.log('자동재생 실패:', err));
+            backgroundMusicPlaying = true;
+            updateMusicButton();
+        });
+
+        // 사용자 상호작용 후 음악 재생 (자동재생 정책 우회)
+        document.addEventListener('click', function() {
+            const audio = document.getElementById('backgroundMusic');
+            if (backgroundMusicPlaying && audio.paused) {
+                audio.play().catch(err => console.log('재생 실패:', err));
+            }
+        }, { once: true });
+
+        function updateMusicButton() {
+            const button = document.getElementById('musicToggle');
+            button.textContent = backgroundMusicPlaying ? '🔊' : '🔇';
+        }
+
         function toggleBackgroundMusic() {
             const audio = document.getElementById('backgroundMusic');
             const button = document.getElementById('musicToggle');
@@ -387,7 +409,7 @@
                 button.textContent = '🔇';
                 backgroundMusicPlaying = false;
             } else {
-                audio.play();
+                audio.play().catch(err => console.log('재생 실패:', err));
                 button.textContent = '🔊';
                 backgroundMusicPlaying = true;
             }
@@ -397,14 +419,14 @@
             const audio = document.getElementById('backgroundMusic');
             audio.pause();
             backgroundMusicPlaying = false;
-            document.getElementById('musicToggle').textContent = '🔇';
+            updateMusicButton();
         }
 
         function resumeBackgroundMusic() {
             const audio = document.getElementById('backgroundMusic');
-            audio.play();
+            audio.play().catch(err => console.log('재생 실패:', err));
             backgroundMusicPlaying = true;
-            document.getElementById('musicToggle').textContent = '🔊';
+            updateMusicButton();
         }
 
         function selectQuestions(difficulty, count) {
@@ -502,7 +524,7 @@
 
             speech.onend = () => {
                 if (wasPlaying) {
-                    audio.play();
+                    audio.play().catch(err => console.log('재생 실패:', err));
                 }
             };
 
