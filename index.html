@@ -235,7 +235,7 @@
 </head>
 
 <body>
-    <audio id="backgroundMusic" preload="auto" loop muted>
+    <audio id="backgroundMusic" preload="auto" loop>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
 
@@ -381,7 +381,6 @@
         // 페이지 로드 시 음악 시작
         window.addEventListener('load', function() {
             const audio = document.getElementById('backgroundMusic');
-            audio.muted = false;
             audio.play().catch(err => console.log('자동재생 실패:', err));
             backgroundMusicPlaying = true;
             updateMusicButton();
