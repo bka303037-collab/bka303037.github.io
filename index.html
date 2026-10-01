@@ -136,6 +136,25 @@
             font-size: 14px;
         }
 
+        .btn-music {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .btn-music:hover {
+            background-color: #ff5252;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
         input[type="text"] {
             width: 85%;
             padding: 14px;
@@ -213,36 +232,6 @@
             font-weight: bold;
             font-size: 20px;
         }
-
-        .music-control {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            padding: 15px;
-            box-shadow: 0 8px 16px rgba(255, 107, 107, 0.4);
-            cursor: pointer;
-            z-index: 9999 !important;
-            width: 60px;
-            height: 60px;
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            font-size: 28px;
-            transition: all 0.2s;
-        }
-
-        .music-control:hover {
-            background: #ff5252;
-            transform: scale(1.1);
-            box-shadow: 0 12px 24px rgba(255, 107, 107, 0.6);
-        }
-
-        .music-control:active {
-            transform: scale(0.95);
-        }
     </style>
 </head>
 
@@ -251,11 +240,6 @@
     <audio id="backgroundMusic" preload="auto" autoplay loop muted crossorigin="anonymous">
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
-
-    <!-- 음악 제어 버튼 -->
-    <button class="music-control" id="musicToggle" onclick="toggleBackgroundMusic()" title="음악 재생/일시정지">
-        🔊
-    </button>
 
     <div class="container">
         <div id="startScreen" class="screen">
@@ -268,8 +252,12 @@
                 <button class="btn-hard" onclick="startGame('hard')">🔴 어려움 (문장 15문제)</button>
             </div>
 
-            <br><br>
-            <button class="btn-exit" onclick="exitProgram()">프로그램 종료</button>
+            <div class="button-group">
+                <button class="btn-music" id="musicToggle" onclick="toggleBackgroundMusic()" title="음악 재생/일시정지">
+                    🎵 음악
+                </button>
+                <button class="btn-exit" onclick="exitProgram()">프로그램 종료</button>
+            </div>
         </div>
 
         <div id="gameScreen" class="screen hidden">
@@ -400,7 +388,6 @@
             audio.play().catch(err => console.log('자동재생 시도:', err));
             backgroundMusicPlaying = true;
             updateMusicButton();
-            console.log('페이지 로드 완료. 음악 버튼이 보이나요?');
         });
 
         document.addEventListener('click', function() {
@@ -416,13 +403,12 @@
             const audio = document.getElementById('backgroundMusic');
             audio.muted = false;
             audioUnlocked = true;
-            console.log('오디오 음소거 해제됨 - 이제 음악이 들릴 거예요!');
         }
 
         function updateMusicButton() {
             const button = document.getElementById('musicToggle');
             if (button) {
-                button.textContent = backgroundMusicPlaying ? '🔊' : '🔇';
+                button.textContent = backgroundMusicPlaying ? '🎵 음악 ON' : '🔇 음악 OFF';
             }
         }
 
