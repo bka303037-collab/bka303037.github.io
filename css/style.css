@@ -1,0 +1,254 @@
+/* ==========================================================================
+   한글 받아쓰기 - 스타일
+   ========================================================================== */
+
+/* ---------- 기본 ---------- */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    text-align: center;
+    background: linear-gradient(135deg, #e0f2fe 0%, #fbcfe8 100%);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    color: #3b82f6;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: #1e293b;
+    margin-top: 0;
+}
+
+/* ---------- 레이아웃 ---------- */
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px 30px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    max-width: 550px;
+    width: 90%;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.screen {
+    width: 100%;
+}
+
+.hidden {
+    display: none;
+}
+
+.info-text {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+.difficulty-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* ---------- 버튼 ---------- */
+button {
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 50px;
+    margin: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s;
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+.btn-easy           { background-color: #86efac; color: #14532d; }
+.btn-easy:hover     { background-color: #4ade80; }
+
+.btn-normal         { background-color: #93c5fd; color: #1e3a8a; }
+.btn-normal:hover   { background-color: #60a5fa; }
+
+.btn-hard           { background-color: #fca5a5; color: #7f1d1d; }
+.btn-hard:hover     { background-color: #f87171; }
+
+.btn-primary        { background-color: #3b82f6; color: #ffffff; }
+.btn-action         { background-color: #fde047; color: #713f12; }
+.btn-listen         { background-color: #e2e8f0; color: #334155; }
+.btn-hint           { background-color: #c4b5fd; color: #4c1d95; }
+
+.btn-exit,
+.btn-music {
+    color: #ffffff;
+    padding: 10px 20px;
+    font-size: 14px;
+}
+
+.btn-exit           { background-color: #94a3b8; }
+.btn-music          { background-color: #ff6b6b; }
+.btn-music:hover    { background-color: #ff5252; }
+
+/* ---------- 게임 화면 ---------- */
+#progressInfo {
+    background-color: #f1f5f9;
+    padding: 6px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: bold;
+    color: #475569;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: 85%;
+    padding: 14px;
+    font-size: 20px;
+    margin: 25px 0 15px;
+    border: 2.5px solid #cbd5e1;
+    border-radius: 16px;
+    text-align: center;
+    outline: none;
+    background-color: #f8fafc;
+}
+
+input[type="text"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    background-color: #ffffff;
+}
+
+#hintArea {
+    min-height: 42px;
+    margin: 5px auto 10px;
+    color: #6d28d9;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.5;
+}
+
+#result {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 15px;
+    min-height: 35px;
+}
+
+#result.is-correct { color: #10b981; }
+#result.is-wrong   { color: #ef4444; }
+#result.is-warning { color: #f59e0b; }
+
+/* ---------- 결과 화면 ---------- */
+.score-box {
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+#finalScore {
+    font-size: 32px;
+    font-weight: bold;
+    color: #3b82f6;
+    margin: 10px 0;
+}
+
+.perfect-message {
+    color: #10b981;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+#wrongAnswers {
+    text-align: left;
+    background: #fff7ed;
+    border-radius: 16px;
+    padding: 15px 20px;
+    margin-top: 15px;
+    color: #7c2d12;
+}
+
+#wrongAnswers h3 {
+    margin-top: 0;
+    color: #ea580c;
+}
+
+.wrong-item {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+/* ---------- 시작 오버레이 ---------- */
+.intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    background: rgba(30, 41, 59, 0.55);
+    backdrop-filter: blur(2px);
+    transition: opacity 0.35s ease;
+}
+
+.intro-overlay.is-closing {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn-start {
+    padding: 20px 48px;
+    font-size: 24px;
+    background-color: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    animation: pulse 1.8s ease-in-out infinite;
+}
+
+.btn-start:hover {
+    background-color: #2563eb;
+}
+
+.btn-start:focus-visible {
+    outline: 4px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 4px;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro-overlay { transition: none; }
+    .btn-start     { animation: none; }
+}
